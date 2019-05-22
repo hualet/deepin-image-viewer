@@ -125,27 +125,10 @@ bool SlideEffectPlayer::startNext()
     }
 
     QString newPath = currentImagePath();
-    m_effect = SlideEffect::create();
-    m_effect->setDuration(ANIMATION_DURATION);
-    m_effect->setSize(fSize);
+    QImage image = QImage(newPath);
 
-    using namespace utils::image;
-    QImage oldImg = m_cacheImages.value(oldPath);
-    QImage newImg = m_cacheImages.value(newPath);
-    // The "newPath" would be the next "oldPath", so there is no need to remove it now
-    m_cacheImages.remove(oldPath);
+    emit frameReady(image);
 
-    m_effect->setImages(oldImg, newImg);
-    if (!m_thread.isRunning())
-        m_thread.start();
-
-    m_effect->moveToThread(&m_thread);
-    connect(m_effect, &SlideEffect::frameReady, this, [=] (const QImage &img) {
-        if (m_running) {
-            Q_EMIT frameReady(img);
-        }
-    }, Qt::DirectConnection);
-    QMetaObject::invokeMethod(m_effect, "start");
     return true;
 }
 

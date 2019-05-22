@@ -104,7 +104,13 @@ void SlideShowPanel::paintEvent(QPaintEvent *e)
     QPainter p(this);
 //    p.setRenderHint(QPainter::Antialiasing);
     p.fillRect(this->rect(), QBrush(QColor(m_bgColor)));
-    p.drawPixmap(this->rect(), QPixmap::fromImage(m_img));
+
+    QPixmap pix = QPixmap::fromImage(m_img).scaled(size(), Qt::KeepAspectRatio);
+
+    // to make sure image is drawn in the center.
+    QRect dest = pix.rect();
+    dest.moveCenter(rect().center());
+    p.drawPixmap(dest, pix);
 }
 
 void SlideShowPanel::resizeEvent(QResizeEvent *e)
